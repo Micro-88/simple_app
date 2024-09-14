@@ -1,5 +1,17 @@
+// card_data.dart
 final List<Map<String, String>> cards = [
-  {'front': 'Front of Card 1', 'back': 'Back of Card 1'},
-  {'front': 'Front of Card 2', 'back': 'Back of Card 2'},
-  {'front': 'Front of Card 3', 'back': 'Back of Card 3'},
+  {
+    'front': 'assets/card_background1.png',
+    'back': 'assets/card_background2.jpg',
+    'frontText': 'Front Text 1',
+    'backText': 'Back Text 1'
+  },
+  {
+    'front': 'assets/card_background1.png',
+    'back': 'assets/card_background2.jpg',
+    'frontText': 'Front Text 2',
+    'backText': 'Back Text 2'
+  },
+  // Add more cards as needed
 ];
+

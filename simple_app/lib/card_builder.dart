@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget buildCard(String text, bool isFront) {
+Widget buildCard(String text, bool isFront, {required String frontImage, required String backImage}) {
   return Card(
     key: ValueKey(isFront),
     elevation: 5,
@@ -12,7 +12,7 @@ Widget buildCard(String text, bool isFront) {
       height: 200,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/card_background1.png'), // Add the image path here
+          image: AssetImage(isFront ? frontImage : backImage),
           fit: BoxFit.cover,
         ),
         borderRadius: BorderRadius.circular(10),
