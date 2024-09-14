@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:math'; // Import this for pi
+import 'dart:math'; // For pi
+import 'card_builder.dart'; // Import the card builder function
+import 'card_data.dart';    // Import the card data
 
 void main() {
   runApp(MyApp());
@@ -11,20 +13,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Flip Card Example'),
+          title: Text('Multiple Flip Cards Example'),
         ),
-        body: FlipCard(),
+        body: FlipCardDeck(),
       ),
     );
   }
 }
 
-class FlipCard extends StatefulWidget {
+class FlipCardDeck extends StatefulWidget {
   @override
-  _FlipCardState createState() => _FlipCardState();
+  _FlipCardDeckState createState() => _FlipCardDeckState();
 }
 
-class _FlipCardState extends State<FlipCard> {
+class _FlipCardDeckState extends State<FlipCardDeck> {
+  int currentIndex = 0;
   bool isFront = true;
 
   void _flipCard() {
@@ -33,78 +36,68 @@ class _FlipCardState extends State<FlipCard> {
     });
   }
 
+  void _nextCard() {
+    setState(() {
+      currentIndex = (currentIndex + 1) % cards.length;
+      isFront = true; // Reset to front when switching cards
+    });
+  }
+
+  void _prevCard() {
+    setState(() {
+      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      isFront = true; // Reset to front when switching cards
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: _flipCard, // Flip the card when tapped
-        child: AnimatedSwitcher(
-          duration: Duration(milliseconds: 500),
-          transitionBuilder: (Widget child, Animation<double> animation) {
-            final rotate = Tween(begin: pi, end: 0.0).animate(animation);
-            return AnimatedBuilder(
-              animation: rotate,
-              child: child,
-              builder: (context, child) {
-                final isUnder = (ValueKey(isFront) != child?.key);
-                final value = isUnder ? min(rotate.value, pi / 2) : rotate.value;
-                return Transform(
-                  transform: Matrix4.rotationY(value),
-                  child: child,
-                  alignment: Alignment.center,
-                );
-              },
-            );
-          },
-          child: isFront
-              ? _buildFrontCard() // Front of the card
-              : _buildBackCard(), // Back of the card
-          switchInCurve: Curves.easeInOut,
-          switchOutCurve: Curves.easeInOut,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFrontCard() {
-    return Card(
-      key: ValueKey(true),
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Container(
-        width: 300,
-        height: 200,
-        padding: EdgeInsets.all(16),
-        child: Center(
-          child: Text(
-            'Elijah',
-            style: TextStyle(fontSize: 24),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: _flipCard,
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 500),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              final rotate = Tween(begin: pi, end: 0.0).animate(animation);
+              return AnimatedBuilder(
+                animation: rotate,
+                child: child,
+                builder: (context, child) {
+                  final isUnder = (ValueKey(isFront) != child?.key);
+                  final value = isUnder ? min(rotate.value, pi / 2) : rotate.value;
+                  return Transform(
+                    transform: Matrix4.rotationY(value),
+                    child: child,
+                    alignment: Alignment.center,
+                  );
+                },
+              );
+            },
+            child: isFront
+                ? buildCard(cards[currentIndex]['front']!, true) // Front side
+                : buildCard(cards[currentIndex]['back']!, false), // Back side
+            switchInCurve: Curves.easeInOut,
+            switchOutCurve: Curves.easeInOut,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBackCard() {
-    return Card(
-      key: ValueKey(false),
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Container(
-        width: 300,
-        height: 200,
-        padding: EdgeInsets.all(16),
-        child: Center(
-          child: Text(
-            'BADING',
-            style: TextStyle(fontSize: 24),
-          ),
+        SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _prevCard,
+              child: Text("Previous"),
+            ),
+            SizedBox(width: 20),
+            ElevatedButton(
+              onPressed: _nextCard,
+              child: Text("Next"),
+            ),
+          ],
         ),
-      ),
+      ],
     );
   }
 }
