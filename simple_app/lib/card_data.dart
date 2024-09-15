@@ -22,14 +22,14 @@ final List<Map<String, String>> cards = [
   {
     'front': 'assets/card_background1.png',
     'back': 'assets/card_background2.jpg',
-    'frontText': 'Text1',
-    'backText': 'An impasta!'
+    'frontText': 'What do you call a sheep who can sing and dance?',
+    'backText': 'Lady Ba Ba.!'
   },
   {
     'front': 'assets/card_background1.png',
     'back': 'assets/card_background2.jpg',
-    'frontText': 'Text2',
-    'backText': 'An impasta!'
+    'frontText': 'What do you call a French man wearing sandals?',
+    'backText': 'Philipe Fallop'
   },
 
 ];
