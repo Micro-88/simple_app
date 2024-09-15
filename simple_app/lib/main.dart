@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math'; // For pi
+import 'dart:async'; // For Timer
 import 'card_builder.dart'; // Import the card builder function
 import 'card_data.dart';    // Import the card data
 
@@ -50,6 +51,38 @@ class FlipCardDeck extends StatefulWidget {
 class _FlipCardDeckState extends State<FlipCardDeck> {
   int currentIndex = 0;
   bool isFront = true;
+  Timer? _timer;
+  List<Map<String, String>> shuffledCards = [];
+
+  @override
+  void initState() {
+    super.initState();
+    shuffledCards = List.from(cards); // Copy the original cards list
+    _shuffleCards(); // Shuffle the cards
+    _startAutoNextCardTimer(); // Start the timer for auto-flipping
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
+  }
+
+  // Function to start the auto next card timer
+  void _startAutoNextCardTimer() {
+    _timer = Timer.periodic(Duration(seconds: 30), (Timer timer) {
+      _nextCard(); // Automatically move to the next card every 30 seconds
+    });
+  }
+
+  // Function to shuffle the cards
+  void _shuffleCards() {
+    setState(() {
+      shuffledCards.shuffle();
+      currentIndex = 0; // Reset currentIndex to 0 after shuffle
+      isFront = true; // Reset the card to the front after shuffle
+    });
+  }
 
   void _flipCard() {
     setState(() {
@@ -59,14 +92,14 @@ class _FlipCardDeckState extends State<FlipCardDeck> {
 
   void _nextCard() {
     setState(() {
-      currentIndex = (currentIndex + 1) % cards.length;
+      currentIndex = (currentIndex + 1) % shuffledCards.length;
       isFront = true; // Reset to front when switching cards
     });
   }
 
   void _prevCard() {
     setState(() {
-      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      currentIndex = (currentIndex - 1 + shuffledCards.length) % shuffledCards.length;
       isFront = true; // Reset to front when switching cards
     });
   }
@@ -99,16 +132,16 @@ class _FlipCardDeckState extends State<FlipCardDeck> {
               },
               child: isFront
                   ? buildCard(
-                cards[currentIndex]['frontText']!,
+                shuffledCards[currentIndex]['frontText']!,
                 true,
-                frontImage: cards[currentIndex]['front']!,
-                backImage: cards[currentIndex]['back']!,
+                frontImage: shuffledCards[currentIndex]['front']!,
+                backImage: shuffledCards[currentIndex]['back']!,
               ) // Front side
                   : buildCard(
-                cards[currentIndex]['backText']!,
+                shuffledCards[currentIndex]['backText']!,
                 false,
-                frontImage: cards[currentIndex]['front']!,
-                backImage: cards[currentIndex]['back']!,
+                frontImage: shuffledCards[currentIndex]['front']!,
+                backImage: shuffledCards[currentIndex]['back']!,
               ), // Back side
               switchInCurve: Curves.easeInOut,
               switchOutCurve: Curves.easeInOut,
@@ -126,6 +159,11 @@ class _FlipCardDeckState extends State<FlipCardDeck> {
               ElevatedButton(
                 onPressed: _nextCard,
                 child: Text("Next"),
+              ),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: _shuffleCards,
+                child: Text("Shuffle"),
               ),
             ],
           ),
